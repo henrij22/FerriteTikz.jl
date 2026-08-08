@@ -36,6 +36,39 @@ the same pattern Ferrite itself uses in `write_facetset` for VTK export.
 In 2D, `Ferrite.facets(cell) == Ferrite.edges(cell)`, which is why facet indices are the
 right thing to ask for.
 
+## Line elements
+
+A cell of reference dimension one — `Line`, `QuadraticLine` — is the one case where facets
+are *not* edges: `facetdof_indices(Lagrange{RefLine, 1}())` is `((1,), (2,))`, the two end
+points. The drawable edge is the cell itself, so `celledges` has a second method selected by
+dispatch on the reference shape:
+
+```julia
+celledges(cell::Ferrite.AbstractCell{<:Ferrite.AbstractRefShape{1}}) = [Ferrite.get_node_ids(cell)]
+```
+
+Ferrite already stores those node ids as `(start, end)` and `(start, end, mid)`, which is the
+same convention the area-cell path produces, so the Bézier machinery needs no special case.
+
+`FerriteTikz.isline(cell)` gates the two behavioural differences, both in `src/tikzcode.jl`:
+
+- `fillcode!` skips line cells — a line encloses no area, and a closed path through it would
+  emit a degenerate zero-area `\fill`. The cell colour is not discarded, though: 
+- `wireframecode!` draws line cells one per cell with that colour as the **stroke** colour,
+  and without the shared-edge deduplication. Two coincident members are two elements and must
+  both appear, whereas two cells sharing a boundary edge must not draw it twice.
+
+Because the dispatch is per cell, a grid mixing `Quadrilateral` and `Line` cells works with
+no extra code.
+
+## One spatial dimension
+
+`nodecoordinates` lifts every coordinate through `FerriteTikz.to2d`, so a `Grid{1}` is drawn
+along the x axis and everything downstream stays `Vec{2}`. The same lift is applied to
+displacements, including the bare `Real`s that `Ferrite.evaluate_at_grid_nodes` returns for a
+one-component field. `nodedisplacements` also accepts `Vec{2}` displacements on a 1D grid,
+which is how a transverse beam deflection is drawn.
+
 ## Curved edges
 
 A quadratic element edge is a quadratic Bézier curve with control point

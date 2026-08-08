@@ -9,8 +9,13 @@ fonts, line widths and colours of the document they end up in, and they stay vec
 all the way into the final PDF. The focus is wireframes with flat, constant per-cell
 colouring, and the deformed configuration of a finite element solution.
 
-Supported are two-dimensional grids made of `Triangle`, `Quadrilateral`,
-`QuadraticTriangle`, `QuadraticQuadrilateral` and `SerendipityQuadraticQuadrilateral` cells.
+Supported are grids in one or two spatial dimensions:
+
+- **area cells** — `Triangle`, `Quadrilateral`, `QuadraticTriangle`,
+  `QuadraticQuadrilateral` and `SerendipityQuadraticQuadrilateral`;
+- **line elements** — `Line` and `QuadraticLine`, in 1D space (a one-dimensional mesh, drawn
+  along the x axis) or in 2D space (trusses and frames). A grid may mix both.
+
 Cells with a quadratic geometric interpolation are drawn with true curved edges.
 
 !!! tip "Which package do I want?"

@@ -7,7 +7,13 @@
     tikzgrid(grid::AbstractGrid, u::AbstractVector; scale = 1.0, reference = nothing, kwargs...)
     tikzgrid(dh::DofHandler, u::AbstractVector; field = :u, scale = 1.0, reference = nothing, kwargs...)
 
-Draw a two-dimensional Ferrite grid as a `TikzPictures.TikzPicture`.
+Draw a Ferrite grid as a `TikzPictures.TikzPicture`. Grids embedded in one or two spatial
+dimensions are supported; a one-dimensional grid is drawn along the x axis.
+
+Area cells (`Triangle`, `Quadrilateral` and their quadratic variants) are drawn as filled
+outlines with shared edges stroked once. Line elements (`Line`, `QuadraticLine`, in either
+1D or 2D space) enclose no area, so they are stroked one per cell and their cell colour
+becomes the *stroke* colour rather than a fill. A grid may mix both.
 
 The result renders inline in VSCode, Pluto and IJulia and can be written to disk with the
 usual `TikzPictures` machinery:

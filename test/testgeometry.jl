@@ -79,8 +79,13 @@ end
     @test cellcentroid(grid, coords, 1) ≈ Vec{2}((0.0, 0.0))
 end
 
-@testitem "Only 2D grids are supported" begin
+@testitem "Only 1D and 2D grids are supported" begin
+    # three-dimensional grids are not implemented yet
     grid = generate_grid(Hexahedron, (1, 1, 1))
     @test_throws ArgumentError tikzgrid(grid)
     @test_throws ArgumentError tikzcode(grid)
+
+    # one and two spatial dimensions are fine
+    @test tikzgrid(generate_grid(Line, (2,))) isa TikzPicture
+    @test tikzgrid(generate_grid(Quadrilateral, (2, 2))) isa TikzPicture
 end

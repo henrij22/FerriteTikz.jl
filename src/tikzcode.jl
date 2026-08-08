@@ -68,31 +68,46 @@ optionstring(parts...) = join(Iterators.filter(!isempty, parts), ", ")
 # THE INDIVIDUAL LAYERS
 # ==============================================================================
 
-function fillcode!(io::IO, reg::ColorRegistry, grid, coords, style::GridStyle)
-    fills = cellfills(grid, style)
+function fillcode!(io::IO, reg::ColorRegistry, grid, coords, fills, style::GridStyle)
     all(isnothing, fills) && return io
     opacity = style.fillopacity < 1 ? "opacity=$(_fmt(style.fillopacity, 3))" : ""
     for cellid in 1:getncells(grid)
         color = fills[cellid]
         color === nothing && continue
+        # a line element encloses no area; its cell colour strokes the line instead, see
+        # `wireframecode!`
+        isline(getcells(grid, cellid)) && continue
         opts = optionstring(tikzcolor(reg, color), opacity)
         println(io, "\\fill[", opts, "] ", cellpath(grid, coords, cellid, style), ";")
     end
     return io
 end
 
-function wireframecode!(io::IO, reg::ColorRegistry, grid, coords, style::GridStyle)
+function wireframecode!(io::IO, reg::ColorRegistry, grid, coords, fills, style::GridStyle)
     style.drawcells || return io
-    opts = optionstring(style.linewidth, tikzcolor(reg, style.linecolor), style.linestyle)
+    baseopts = optionstring(style.linewidth, tikzcolor(reg, style.linecolor), style.linestyle)
     drawn = Set{NTuple{2, Int}}()
     for cellid in 1:getncells(grid)
         cell = getcells(grid, cellid)
+        if isline(cell)
+            # Line elements are drawn one per cell: they are elements in their own right
+            # rather than shared boundaries, so there is nothing to deduplicate, and the
+            # cell colour (if any) becomes the stroke colour.
+            color = fills[cellid]
+            opts = color === nothing ? baseopts :
+                optionstring(style.linewidth, tikzcolor(reg, color), style.linestyle)
+            seg = edgesegment(coords, only(celledges(cell)); bezier = style.bezier)
+            print(io, "\\draw[", opts, "] ")
+            appendsegment!(io, seg, style.digits; moveto = true)
+            println(io, ";")
+            continue
+        end
         for edge in celledges(cell)
             key = edgekey(edge)
             key in drawn && continue   # interior edges are shared, draw them once
             push!(drawn, key)
             seg = edgesegment(coords, edge; bezier = style.bezier)
-            print(io, "\\draw[", opts, "] ")
+            print(io, "\\draw[", baseopts, "] ")
             appendsegment!(io, seg, style.digits; moveto = true)
             println(io, ";")
         end
@@ -138,8 +153,9 @@ several grids into one picture, e.g. the reference and the deformed configuratio
 function gridcode!(io::IO, reg::ColorRegistry, grid::Ferrite.AbstractGrid, coords::AbstractVector{<:Vec{2}}, style::GridStyle)
     checksupported(grid)
     @argcheck length(coords) == getnnodes(grid) "length(coords) == $(length(coords)) does not match getnnodes(grid) == $(getnnodes(grid))"
-    fillcode!(io, reg, grid, coords, style)
-    wireframecode!(io, reg, grid, coords, style)
+    fills = cellfills(grid, style)
+    fillcode!(io, reg, grid, coords, fills, style)
+    wireframecode!(io, reg, grid, coords, fills, style)
     nodecode!(io, reg, grid, coords, style)
     celllabelcode!(io, reg, grid, coords, style)
     return io

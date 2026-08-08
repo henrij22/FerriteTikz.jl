@@ -49,6 +49,8 @@ FerriteTikz.cellfills
 
 ```@docs
 FerriteTikz.checksupported
+FerriteTikz.isline
+FerriteTikz.to2d
 FerriteTikz.nodecoordinates
 FerriteTikz.celledges
 FerriteTikz.edgekey

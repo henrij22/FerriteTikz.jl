@@ -8,16 +8,17 @@
 """
     checksupported(grid)
 
-Throw a descriptive error if `grid` cannot be plotted by FerriteTikz. Only two-dimensional
-grids are supported at the moment.
+Throw a descriptive error if `grid` cannot be plotted by FerriteTikz. Grids embedded in one
+or two spatial dimensions are supported; 3D is not implemented yet.
 """
 function checksupported(grid::Ferrite.AbstractGrid)
     sdim = Ferrite.getspatialdim(grid)
-    if sdim != 2
+    if !(sdim in (1, 2))
         throw(
             ArgumentError(
-                "FerriteTikz currently only supports two-dimensional grids, got a grid with " *
-                    "spatial dimension $sdim. Support for 3D grids is not implemented yet."
+                "FerriteTikz currently only supports grids in one or two spatial dimensions, " *
+                    "got a grid with spatial dimension $sdim. Support for 3D grids is not " *
+                    "implemented yet."
             )
         )
     end
@@ -25,29 +26,63 @@ function checksupported(grid::Ferrite.AbstractGrid)
 end
 
 """
+    isline(cell) -> Bool
+
+Whether `cell` is a line element, i.e. a cell of reference dimension one such as `Line` or
+`QuadraticLine`. Line elements are drawn as stroked paths rather than filled areas, and
+their [`celledges`](@ref) is the cell itself.
+"""
+isline(::Ferrite.AbstractCell) = false
+isline(::Ferrite.AbstractCell{<:Ferrite.AbstractRefShape{1}}) = true
+
+"""
     nodecoordinates(grid) -> Vector{Vec{2, T}}
 
-The coordinates of all nodes of `grid`, in node order.
+The coordinates of all nodes of `grid`, in node order, lifted to two dimensions. Grids
+embedded in one spatial dimension are drawn along the x axis, i.e. a node at `x` becomes
+`(x, 0)`.
 """
 function nodecoordinates(grid::Ferrite.AbstractGrid)
-    return [Ferrite.get_node_coordinate(grid, i) for i in 1:getnnodes(grid)]
+    return [to2d(Ferrite.get_node_coordinate(grid, i)) for i in 1:getnnodes(grid)]
 end
+
+"""
+    to2d(x) -> Vec{2}
+
+Lift a coordinate or displacement to two dimensions, placing one-dimensional data on the
+x axis. Two-dimensional input is returned unchanged.
+
+A bare `Real` is accepted because `Ferrite.evaluate_at_grid_nodes` returns plain scalars for
+one-component fields, which is how a displacement field on a one-dimensional grid is usually
+declared.
+"""
+to2d(x::Vec{2}) = x
+to2d(x::Vec{1, T}) where {T} = Vec{2, T}((x[1], zero(T)))
+to2d(x::T) where {T <: Real} = Vec{2, T}((x, zero(T)))
 
 """
     celledges(cell) -> Vector{NTuple{N, Int}}
 
-The global node ids of every edge (in 2D: facet) of `cell`, in local edge order. Each entry
-holds the two corner nodes first, followed by the interior nodes of that edge, i.e. `(n1, n2)`
-for a linear cell and `(n1, n2, nmid)` for a cell with a quadratic geometric interpolation.
+The global node ids of every edge of `cell`, in local edge order. Each entry holds the two
+end nodes first, followed by the interior nodes of that edge, i.e. `(n1, n2)` for a linear
+edge and `(n1, n2, nmid)` for an edge with a quadratic geometric interpolation.
 
-This follows the same pattern Ferrite itself uses to resolve facet nodes when writing facet
-sets to VTK, so higher-order cells are handled without a per-cell-type lookup table.
+For an area cell the edges are its facets, resolved through `Ferrite.facetdof_indices`. This
+is the same pattern Ferrite itself uses when writing facet sets to VTK, so higher-order cells
+are handled without a per-cell-type lookup table.
+
+For a line element (see [`isline`](@ref)) the facets are its two *end points*, which are not
+edges at all — the drawable edge is the cell itself, so its node ids are returned as a single
+entry. Ferrite orders those as `(start, end)` and `(start, end, mid)`, which already matches
+the convention above.
 """
 function celledges(cell::Ferrite.AbstractCell)
     gip = Ferrite.geometric_interpolation(typeof(cell))
     nodeids = Ferrite.get_node_ids(cell)
     return [map(i -> nodeids[i], facetdofs) for facetdofs in Ferrite.facetdof_indices(gip)]
 end
+
+celledges(cell::Ferrite.AbstractCell{<:Ferrite.AbstractRefShape{1}}) = [Ferrite.get_node_ids(cell)]
 
 """
     edgekey(edge) -> NTuple{2, Int}

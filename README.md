@@ -10,9 +10,10 @@ line widths and colours of the document they end up in — and they stay vector 
 the way into the PDF.
 
 The focus is wireframes with flat, constant per-cell colouring, and the deformed
-configuration of a finite element solution. Two-dimensional grids are supported;
-`Triangle`, `Quadrilateral` and their quadratic variants, the latter drawn with true curved
-edges.
+configuration of a finite element solution. Grids in one or two spatial dimensions are
+supported: `Triangle`, `Quadrilateral` and their quadratic variants, plus `Line` and
+`QuadraticLine` elements for 1D meshes, trusses and frames. Quadratic cells are drawn with
+true curved edges.
 
 For interactive exploration of a solution field, use
 [FerriteViz.jl](https://github.com/Ferrite-FEM/FerriteViz.jl) instead — the two packages are
@@ -65,6 +66,40 @@ p = tikzgrid(
 
 Instead of a `DofHandler`, nodal displacements can be passed directly, either as a
 `Vector{Vec{2}}` or as a flat `Vector{<:Real}` of length `2 * getnnodes(grid)`.
+
+### Line elements — 1D meshes, trusses and frames
+
+`Line` and `QuadraticLine` cells work in both 1D and 2D space. A one-dimensional grid is
+drawn along the x axis:
+
+```julia
+tikzgrid(generate_grid(Line, (6,)); drawnodes = true, nodelabels = true)
+```
+
+A line element encloses no area, so it is stroked rather than filled and its cell colour
+becomes the *stroke* colour — which makes `cellsetcolors` the natural way to highlight
+members of a truss:
+
+```julia
+nodes = [Node((0.0, 0.0)), Node((1.0, 0.0)), Node((2.0, 0.0)), Node((0.5, 0.8)), Node((1.5, 0.8))]
+truss = Grid([Line((1, 2)), Line((2, 3)), Line((1, 4)), Line((4, 2)),
+              Line((2, 5)), Line((5, 3)), Line((4, 5))], nodes)
+addcellset!(truss, "chord", [1, 2])
+
+tikzgrid(truss; cellsetcolors = ["chord" => "red"], linewidth = "thick", drawnodes = true)
+```
+
+Unlike the shared edges of area cells, members are elements in their own right and are never
+deduplicated. Grids may mix area and line cells — a solid with reinforcement bars draws the
+quadrilaterals filled and the bars stroked on top.
+
+On a 1D grid, `Vec{2}` displacements are also accepted, which draws a transverse deflection:
+
+```julia
+grid = generate_grid(Line, (20,))
+w = [Vec{2}((0.0, 0.3 * sin(π * (x[1] + 1) / 2))) for x in Ferrite.get_node_coordinate.((grid,), 1:getnnodes(grid))]
+tikzgrid(grid, w; reference = (linestyle = "dashed", linecolor = "gray"))
+```
 
 ### Element and mesh figures for papers
 

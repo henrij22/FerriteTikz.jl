@@ -26,6 +26,7 @@ makedocs(;
             "Tutorials overview" => "tutorials/index.md",
             "tutorials/wireframe.md",
             "tutorials/cellsets.md",
+            "tutorials/lines.md",
             "tutorials/deformed.md",
         ],
         "API Reference" => "api_reference.md",
