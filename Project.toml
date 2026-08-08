@@ -22,7 +22,7 @@ Ferrite = "1.4"
 Printf = "1"
 Reexport = "1"
 Tensors = "1"
-TikzPictures = "3"
+TikzPictures = "3.4"
 julia = "1.11"
 
 [extras]
