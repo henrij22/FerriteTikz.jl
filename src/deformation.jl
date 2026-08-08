@@ -76,4 +76,4 @@ function deformedcoordinates(grid::Ferrite.AbstractGrid, u::AbstractVector; scal
     return _deform(nodecoordinates(grid), nodedisplacements(grid, u), scale)
 end
 
-_deform(x, u, scale) = [xi + scale * ui for (xi, ui) in zip(x, u)]
+@inline _deform(x, u, scale) = [xi + scale * ui for (xi, ui) in zip(x, u)]

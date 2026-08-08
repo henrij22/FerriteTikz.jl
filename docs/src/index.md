@@ -20,7 +20,7 @@ Cells with a quadratic geometric interpolation are drawn with true curved edges.
 
 !!! tip "Which package do I want?"
     Use [FerriteViz.jl](https://github.com/Ferrite-FEM/FerriteViz.jl) to *explore* a solution
-    interactively, with colour maps, warping, clipping and 3D. Use FerriteTikz to produce the
+    interactively, with colour maps, warping, clipping and 3D. Use FerriteTikz.jl to produce the
     static mesh and deformation figures that go into a paper or a thesis. The two are
     complementary.
 
