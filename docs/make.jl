@@ -1,4 +1,4 @@
-using Documenter, FerriteTikz
+using Documenter, DocumenterCodeBlocks, FerriteTikz
 
 const liveserver = "liveserver" in ARGS
 
@@ -16,6 +16,7 @@ makedocs(;
         assets = String[],
     ),
     repo = Documenter.Remotes.GitHub("henrij22", "FerriteTikz.jl"),
+    plugins = [CodeBlocks()],
     modules = [FerriteTikz],
     sitename = "FerriteTikz.jl",
     warnonly = true, checkdocs = :none,
