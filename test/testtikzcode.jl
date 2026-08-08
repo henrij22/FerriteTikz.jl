@@ -28,6 +28,18 @@ end
     # a straight quadratic edge puts its control points at one and two thirds
     grid = generate_grid(QuadraticQuadrilateral, (1, 1))
     @test occursin("(-1,-1) .. controls (-0.33333,-1) and (0.33333,-1) .. (1,-1)", tikzcode(grid))
+
+    # a genuinely curved edge: mid side node pulled to y = -0.4 gives control points at
+    # y = 2/3 * (2 * (-0.4)) = -0.53333
+    nodes = [
+        Node((0.0, 0.0)), Node((2.0, 0.0)), Node((2.0, 2.0)), Node((0.0, 2.0)),
+        Node((1.0, -0.4)), Node((2.0, 1.0)), Node((1.0, 2.0)), Node((0.0, 1.0)),
+    ]
+    grid = Grid([SerendipityQuadraticQuadrilateral((1, 2, 3, 4, 5, 6, 7, 8))], nodes)
+    code = tikzcode(grid)
+    @test occursin("(0,0) .. controls (0.66667,-0.53333) and (1.33333,-0.53333) .. (2,0)", code)
+    # the three straight edges collapse onto their chords
+    @test occursin("(2,0) .. controls (2,0.66667) and (2,1.33333) .. (2,2)", code)
 end
 
 @testitem "Cell fills" begin

@@ -61,7 +61,7 @@ using Colors
 
 grid = generate_grid(Triangle, (6, 6))
 for (i, name) in enumerate(("a", "b", "c", "d"))
-    addcellset!(grid, name, cellid -> mod1(cellid, 4) == i)
+    addcellset!(grid, name, filter(cellid -> mod1(cellid, 4) == i, 1:getncells(grid)))
 end
 palette = distinguishable_colors(4, [RGB(1, 1, 1)]; dropseed = true)
 

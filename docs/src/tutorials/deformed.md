@@ -2,7 +2,6 @@
 
 ```@example deformed
 using FerriteTikz
-using LinearAlgebra, SparseArrays
 TikzPictures.tikzUseTectonic(true) # hide
 nothing # hide
 ```

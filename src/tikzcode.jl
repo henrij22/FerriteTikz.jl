@@ -151,8 +151,8 @@ end
     tikzcode(dh::DofHandler, u; field = :u, scale = 1.0, kwargs...) -> String
 
 The raw TikZ code for a grid, i.e. the body of the `tikzpicture` environment, *without* the
-`\\definecolor` statements (those live in the preamble of the [`TikzPicture`](@ref) built by
-[`tikzgrid`](@ref)). Useful for composing pictures by hand.
+`\\definecolor` statements (those live in the preamble of the `TikzPictures.TikzPicture`
+built by [`tikzgrid`](@ref)). Useful for composing pictures by hand.
 
 All keyword arguments are documented in [`GridStyle`](@ref). See [`tikzgrid`](@ref) for the
 meaning of `u`, `scale`, `field` and `reference`.
