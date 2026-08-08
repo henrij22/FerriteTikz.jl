@@ -1,0 +1,67 @@
+# ==============================================================================
+# DEFORMED CONFIGURATION
+# ==============================================================================
+
+"""
+    nodedisplacements(dh::DofHandler, u::AbstractVector; field = :u) -> Vector{Vec{2}}
+    nodedisplacements(grid, u::AbstractVector{<:Vec{2}}) -> Vector{Vec{2}}
+    nodedisplacements(grid, u::AbstractVector{<:Real}) -> Vector{Vec{2}}
+
+The displacement of every grid node, in node order.
+
+Given a `DofHandler` and a global solution vector, the nodal values of `field` are obtained
+with `Ferrite.evaluate_at_grid_nodes`, i.e. by evaluating the shape functions of the field at
+the reference coordinates of the nodes. Nodes on which `field` is not defined come back as
+`NaN` from Ferrite and are reported as zero displacement together with a warning.
+
+Alternatively the displacements can be handed over directly, either as a vector of `Vec{2}`
+of length `getnnodes(grid)` or as a flat vector of length `2 * getnnodes(grid)` laid out as
+`[u1x, u1y, u2x, u2y, ...]`.
+"""
+function nodedisplacements(dh::Ferrite.DofHandler, u::AbstractVector; field::Symbol = :u)
+    grid = Ferrite.get_grid(dh)
+    checksupported(grid)
+    @argcheck field in Ferrite.getfieldnames(dh) "the DofHandler has no field :$field, available fields are $(Ferrite.getfieldnames(dh))"
+    @argcheck length(u) == ndofs(dh) "length(u) == $(length(u)) does not match ndofs(dh) == $(ndofs(dh))"
+    ncomp = Ferrite.n_components(dh, field)
+    @argcheck ncomp == 2 "field :$field has $ncomp components, expected a two-dimensional vector field"
+    nodal = Ferrite.evaluate_at_grid_nodes(dh, u, field)
+    return _replacenans(nodal)
+end
+
+function nodedisplacements(grid::Ferrite.AbstractGrid, u::AbstractVector{<:Vec{2}})
+    checksupported(grid)
+    @argcheck length(u) == getnnodes(grid) "length(u) == $(length(u)) does not match getnnodes(grid) == $(getnnodes(grid))"
+    return _replacenans(u)
+end
+
+function nodedisplacements(grid::Ferrite.AbstractGrid, u::AbstractVector{<:Real})
+    checksupported(grid)
+    nnodes = getnnodes(grid)
+    @argcheck length(u) == 2 * nnodes "length(u) == $(length(u)) matches neither getnnodes(grid) == $nnodes (as a vector of Vec{2}) nor 2 * getnnodes(grid) == $(2 * nnodes) (as a flat vector)"
+    return _replacenans([Vec{2}((u[2i - 1], u[2i])) for i in 1:nnodes])
+end
+
+function _replacenans(u::AbstractVector{<:Vec{2, T}}) where {T}
+    any(x -> any(isnan, x), u) || return collect(u)
+    @warn "the displacement field is not defined on all nodes of the grid; undefined nodes are drawn undeformed"
+    return [any(isnan, x) ? zero(Vec{2, T}) : x for x in u]
+end
+
+"""
+    deformedcoordinates(grid, u; scale = 1.0) -> Vector{Vec{2}}
+    deformedcoordinates(dh::DofHandler, u; scale = 1.0, field = :u) -> Vector{Vec{2}}
+
+The node coordinates of the deformed configuration, `x_i + scale * u_i`. The displacements
+`u` are resolved by [`nodedisplacements`](@ref), so all of its input formats are accepted.
+"""
+function deformedcoordinates(dh::Ferrite.DofHandler, u::AbstractVector; scale::Real = 1.0, field::Symbol = :u)
+    grid = Ferrite.get_grid(dh)
+    return _deform(nodecoordinates(grid), nodedisplacements(dh, u; field), scale)
+end
+
+function deformedcoordinates(grid::Ferrite.AbstractGrid, u::AbstractVector; scale::Real = 1.0)
+    return _deform(nodecoordinates(grid), nodedisplacements(grid, u), scale)
+end
+
+_deform(x, u, scale) = [xi + scale * ui for (xi, ui) in zip(x, u)]
