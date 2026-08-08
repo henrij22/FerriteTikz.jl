@@ -12,7 +12,7 @@ By default [`tikzgrid`](@ref) draws nothing but the element edges, each one exac
 
 ```@example wireframe
 grid = generate_grid(Triangle, (6, 4))
-tikzgrid(grid; picturescale = 1.5)
+tikzgrid(grid; picturescale = 6.5)
 ```
 
 `picturescale` is the TikZ `scale=` factor, i.e. how large one grid unit is drawn. It is
@@ -29,7 +29,7 @@ grid = generate_grid(Quadrilateral, (4, 3))
 tikzgrid(
     grid;
     linewidth = "line width=0.8pt", linecolor = "blue!60!black",
-    picturescale = 1.5,
+    picturescale = 6.5,
 )
 ```
 
@@ -42,7 +42,7 @@ grid = generate_grid(Quadrilateral, (2, 2))
 tikzgrid(
     grid;
     drawnodes = true, nodelabels = true, celllabels = true,
-    picturescale = 2.5,
+    picturescale = 6.5,
 )
 ```
 
@@ -62,13 +62,13 @@ grid = generate_grid(QuadraticQuadrilateral, (3, 3))
 # bend the mesh so the curvature is visible
 transform_coordinates!(grid, x -> Vec{2}((x[1], x[2] + 0.35 * (1 - x[1]^2))))
 
-tikzgrid(grid; cellcolor = "orange!15", drawnodes = true, picturescale = 2)
+tikzgrid(grid; cellcolor = "orange!15", drawnodes = true, picturescale = 6.5)
 ```
 
 Pass `bezier = false` to fall back to straight corner-to-corner edges:
 
 ```@example wireframe
-tikzgrid(grid; cellcolor = "orange!15", bezier = false, picturescale = 2)
+tikzgrid(grid; cellcolor = "orange!15", bezier = false, picturescale = 6.5)
 ```
 
 ## Getting at the code

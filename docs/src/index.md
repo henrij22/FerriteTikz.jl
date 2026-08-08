@@ -37,7 +37,7 @@ using FerriteTikz
 TikzPictures.tikzUseTectonic(true) # hide
 
 grid = generate_grid(Quadrilateral, (8, 4))
-tikzgrid(grid; cellcolor = "blue!12", picturescale = 1.2)
+tikzgrid(grid; cellcolor = "blue!12", picturescale = 6.5)
 ```
 
 The returned object is a `TikzPictures.TikzPicture`. It renders inline in VSCode, Pluto and

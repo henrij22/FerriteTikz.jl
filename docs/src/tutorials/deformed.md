@@ -83,14 +83,14 @@ are extracted with `Ferrite.evaluate_at_grid_nodes`, so the field may live on an
 interpolation:
 
 ```@example deformed
-tikzgrid(dh, u; field = :u, scale = 1.0, cellcolor = "blue!12", picturescale = 0.9)
+tikzgrid(dh, u; field = :u, scale = 1.0, cellcolor = "blue!12", picturescale = 1.8)
 ```
 
 `scale` magnifies the displacement — the coordinates themselves are not scaled, so the
 picture keeps its physical size:
 
 ```@example deformed
-tikzgrid(dh, u; scale = 5.0, cellcolor = "blue!12", picturescale = 0.9)
+tikzgrid(dh, u; scale = 5.0, cellcolor = "blue!12", picturescale = 1.8)
 ```
 
 ## Overlaying the reference configuration
@@ -105,7 +105,7 @@ tikzgrid(
     scale = 5.0,
     cellcolor = "blue!12",
     reference = (linecolor = "gray", linestyle = "dashed"),
-    picturescale = 0.9,
+    picturescale = 1.8,
 )
 ```
 
@@ -122,7 +122,7 @@ A `DofHandler` is not required. Nodal displacements can be handed over as a
 grid2 = generate_grid(Quadrilateral, (10, 2), Vec{2}((0.0, -0.2)), Vec{2}((4.0, 0.2)))
 ud = [Vec{2}((0.0, 0.15 * x[1]^2)) for x in Ferrite.get_node_coordinate.((grid2,), 1:getnnodes(grid2))]
 
-tikzgrid(grid2, ud; scale = 1.0, cellcolor = "green!12", reference = true, picturescale = 1.2)
+tikzgrid(grid2, ud; scale = 1.0, cellcolor = "green!12", reference = true, picturescale = 4)
 ```
 
 [`deformedcoordinates`](@ref) and [`nodedisplacements`](@ref) expose the same conversion if

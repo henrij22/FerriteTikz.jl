@@ -15,7 +15,7 @@ the emitted TikZ small and hand-editable.
 
 ```@example cellsets
 grid = generate_grid(Quadrilateral, (8, 4))
-tikzgrid(grid; cellcolor = "blue!12", picturescale = 1.2)
+tikzgrid(grid; cellcolor = "blue!12", picturescale = 6.5)
 ```
 
 ## Per cell set colours
@@ -32,7 +32,7 @@ tikzgrid(
     grid;
     cellsetcolors = ["steel" => "gray!35", "rubber" => colorant"#fb9a99"],
     cellcolor = "white",
-    picturescale = 1.2,
+    picturescale = 6.5,
 )
 ```
 
@@ -69,7 +69,7 @@ tikzgrid(
     grid;
     cellsetcolors = [name => c for (name, c) in zip(("a", "b", "c", "d"), palette)],
     fillopacity = 0.5,
-    picturescale = 1.5,
+    picturescale = 6.5,
 )
 ```
 
@@ -78,13 +78,22 @@ coloured background or overlaid on something else.
 
 ## Fills without a wireframe, and vice versa
 
-`drawcells = false` drops the wireframe and leaves only the filled cells:
+`drawcells = false` drops the wireframe and leaves only the filled cells, which turns the mesh
+into a plain map of its regions:
 
 ```@example cellsets
 grid = generate_grid(Quadrilateral, (8, 4))
 addcellset!(grid, "inclusion", x -> abs(x[1]) <= 0.5 && abs(x[2]) <= 0.5)
-tikzgrid(grid; cellsetcolors = ["inclusion" => "black!70"], drawcells = false, picturescale = 1.2)
+tikzgrid(
+    grid;
+    cellcolor = "gray!25", cellsetcolors = ["inclusion" => "black!70"],
+    drawcells = false, picturescale = 6.5,
+)
 ```
+
+Note that TikZ crops the picture to what is actually drawn: without the `cellcolor` above,
+only the eight cells of the inclusion would be emitted and the figure would shrink to that
+region instead of covering the whole domain.
 
 !!! warning "Empty cell sets draw nothing"
     `addcellset!(grid, name, f)` defaults to `all = true`, which selects a cell only when

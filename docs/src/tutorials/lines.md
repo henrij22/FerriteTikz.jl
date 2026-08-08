@@ -22,7 +22,7 @@ A grid with `Ferrite.getspatialdim(grid) == 1` is drawn along the x axis:
 
 ```@example lines
 grid = generate_grid(Line, (6,))
-tikzgrid(grid; drawnodes = true, nodelabels = true, celllabels = true, picturescale = 3)
+tikzgrid(grid; drawnodes = true, nodelabels = true, celllabels = true, picturescale = 6)
 ```
 
 ## Trusses and frames
@@ -48,7 +48,7 @@ addcellset!(truss, "top", 4:5)
 tikzgrid(
     truss;
     cellsetcolors = ["bottom" => "blue!60!black", "top" => "red!60!black"],
-    linewidth = "thick", drawnodes = true, picturescale = 2,
+    linewidth = "thick", drawnodes = true, picturescale = 4,
 )
 ```
 
@@ -65,7 +65,7 @@ arch = Grid(
         Node((4.0, 0.0)), Node((3.0, 0.75)),
     ],
 )
-tikzgrid(arch; linewidth = "very thick", drawnodes = true, picturescale = 1.5)
+tikzgrid(arch; linewidth = "very thick", drawnodes = true, picturescale = 3)
 ```
 
 ## Mixing line and area cells
@@ -85,7 +85,7 @@ addcellset!(reinforced, "rebar", (length(quads) + 1):(length(quads) + length(bar
 tikzgrid(
     reinforced;
     cellcolor = "gray!20", cellsetcolors = ["rebar" => "red"],
-    linewidth = "thick", picturescale = 1.5,
+    linewidth = "thick", picturescale = 5,
 )
 ```
 
@@ -103,7 +103,7 @@ tikzgrid(
     grid, w;
     linewidth = "thick",
     reference = (linecolor = "gray", linestyle = "dashed"),
-    picturescale = 3,
+    picturescale = 6,
 )
 ```
 

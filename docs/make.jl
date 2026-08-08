@@ -13,7 +13,7 @@ makedocs(;
     format = Documenter.HTML(;
         canonical = "https://henrij22.github.io/FerriteTikz.jl/stable",
         collapselevel = 1,
-        assets = String[],
+        assets = ["assets/custom.css"],
     ),
     repo = Documenter.Remotes.GitHub("henrij22", "FerriteTikz.jl"),
     plugins = [CodeBlocks()],
