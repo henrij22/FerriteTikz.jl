@@ -127,3 +127,28 @@ tikzgrid(grid2, ud; scale = 1.0, cellcolor = "green!12", reference = true, pictu
 
 [`deformedcoordinates`](@ref) and [`nodedisplacements`](@ref) expose the same conversion if
 you want the coordinates for something else.
+
+## More than two configurations
+
+`reference` covers the common case of one undeformed and one deformed state. For a whole load
+history, open a picture with [`setupMultiPlot`](@ref), append one layer per state with
+[`gridcode!`](@ref), and close it with [`drawMultiPlot`](@ref):
+
+```@example deformed
+io, reg = setupMultiPlot()
+
+gridcode!(io, reg, grid, FerriteTikz.nodecoordinates(grid), GridStyle(linecolor = "gray", linestyle = "dashed"))
+for (factor, color) in zip((2.0, 3.5, 5.0), ("blue!30!black", "blue!60!white", "red"))
+    gridcode!(io, reg, grid, deformedcoordinates(dh, u; scale = factor), GridStyle(linecolor = color))
+end
+
+drawMultiPlot(io, reg; picturescale = 1.8)
+```
+
+Each call appends one layer in drawing order with its own [`GridStyle`](@ref), so the layers
+can differ in colour, line style, fills and labels. Sharing the single registry is what keeps
+a `Colors.Colorant` used by several layers down to one `\definecolor` statement.
+
+!!! note
+    A picture has a single scale, given to `drawMultiPlot` as `picturescale`; the `scale`
+    field of the individual `GridStyle`s is ignored here.

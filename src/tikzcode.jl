@@ -147,8 +147,9 @@ end
     gridcode!(io, reg::ColorRegistry, grid, coords, style::GridStyle)
 
 Write the TikZ body for one grid (fills, wireframe, node markers, labels) to `io`,
-registering any `Colorant`s in `reg`. Call this repeatedly with the same `reg` to compose
-several grids into one picture, e.g. the reference and the deformed configuration.
+registering any `Colorant`s in `reg`. Call this repeatedly with the same `io` and `reg` to
+compose several grids into one picture; [`setupMultiPlot`](@ref) and [`drawMultiPlot`](@ref)
+open and close such a picture for you.
 """
 function gridcode!(io::IO, reg::ColorRegistry, grid::Ferrite.AbstractGrid, coords::AbstractVector{<:Vec{2}}, style::GridStyle)
     checksupported(grid)

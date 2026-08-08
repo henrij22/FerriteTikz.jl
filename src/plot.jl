@@ -94,6 +94,56 @@ TikzPictures.TikzPicture(grid::Ferrite.AbstractGrid; kwargs...) = tikzgrid(grid;
 TikzPictures.TikzPicture(dh::Ferrite.DofHandler, u::AbstractVector; kwargs...) = tikzgrid(dh, u; kwargs...)
 
 # ==============================================================================
+# COMPOSING SEVERAL GRIDS INTO ONE PICTURE
+# ==============================================================================
+
+"""
+    setupMultiPlot() -> (io, registry)
+
+Start a picture that several grids are drawn into, and return the `IOBuffer` and the
+[`ColorRegistry`](@ref FerriteTikz.ColorRegistry) to hand to
+[`gridcode!`](@ref FerriteTikz.gridcode!). Close the picture with [`drawMultiPlot`](@ref).
+
+[`tikzgrid`](@ref) already draws a reference and a deformed configuration together; use this
+when you need more than those two layers, for example a whole load history:
+
+```julia
+io, reg = setupMultiPlot()
+gridcode!(io, reg, grid, coords_0, GridStyle(linecolor = "gray", linestyle = "dashed"))
+gridcode!(io, reg, grid, coords_1, GridStyle(linecolor = "blue"))
+gridcode!(io, reg, grid, coords_2, GridStyle(linecolor = "red"))
+p = drawMultiPlot(io, reg; picturescale = 2)
+```
+
+Sharing one registry across the calls is what keeps a `Colors.Colorant` used by several
+layers to a single `\\definecolor` statement.
+"""
+setupMultiPlot() = (IOBuffer(), ColorRegistry())
+
+"""
+    drawMultiPlot(io, registry; picturescale = 1.0) -> TikzPicture
+    drawMultiPlot((io, registry); picturescale = 1.0) -> TikzPicture
+
+Close a picture started with [`setupMultiPlot`](@ref) and return it as a
+`TikzPictures.TikzPicture`, ready for `save(PDF(...), p)` or inline display. The buffer is
+emptied, so call this once.
+
+!!! note
+    The `scale` field of the individual [`GridStyle`](@ref)s passed to
+    [`gridcode!`](@ref FerriteTikz.gridcode!) is *not* used — a picture has a single scale,
+    given here as `picturescale`. Every other style option applies per layer as usual.
+"""
+function drawMultiPlot(io::IO, registry::ColorRegistry; picturescale::Real = 1.0)
+    return TikzPicture(
+        String(take!(io));
+        options = "scale=$(_fmt(picturescale, 6))",
+        preamble = definecolors(registry),
+    )
+end
+
+drawMultiPlot(setup::Tuple{IO, ColorRegistry}; kwargs...) = drawMultiPlot(setup...; kwargs...)
+
+# ==============================================================================
 # INTERNALS
 # ==============================================================================
 

@@ -35,6 +35,9 @@ include("plot.jl")
 # Plotting
 export tikzgrid, tikzcode
 
+# Composing several grids into one picture
+export setupMultiPlot, drawMultiPlot, gridcode!
+
 # Styling
 export GridStyle, TikzColor
 

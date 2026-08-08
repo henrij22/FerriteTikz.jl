@@ -21,23 +21,34 @@ deformedcoordinates
 nodedisplacements
 ```
 
-## Composing pictures by hand
+## Composing several grids into one picture
 
-The picture body is built by writing one grid at a time into an `IO`, sharing a
-[`FerriteTikz.ColorRegistry`](@ref) so that `\definecolor` statements are emitted once. Use
-this to stack more than the two configurations [`tikzgrid`](@ref) handles itself:
+[`tikzgrid`](@ref) already draws a reference and a deformed configuration together. For more
+layers than that — a load history, a sequence of refinements, several patches side by side —
+build the picture up one grid at a time between [`setupMultiPlot`](@ref) and
+[`drawMultiPlot`](@ref):
 
 ```julia
-reg = FerriteTikz.ColorRegistry()
-io = IOBuffer()
-FerriteTikz.gridcode!(io, reg, grid, coords_0, GridStyle(linecolor = "gray"))
-FerriteTikz.gridcode!(io, reg, grid, coords_1, GridStyle(linecolor = "blue"))
-FerriteTikz.gridcode!(io, reg, grid, coords_2, GridStyle(linecolor = "red"))
-p = TikzPicture(String(take!(io)); preamble = FerriteTikz.definecolors(reg))
+io, reg = setupMultiPlot()
+gridcode!(io, reg, grid, coords_0, GridStyle(linecolor = "gray", linestyle = "dashed"))
+gridcode!(io, reg, grid, coords_1, GridStyle(linecolor = "blue"))
+gridcode!(io, reg, grid, coords_2, GridStyle(linecolor = "red"))
+p = drawMultiPlot(io, reg; picturescale = 2)
 ```
 
+Each [`gridcode!`](@ref) call appends one layer, in drawing order, with its own
+[`GridStyle`](@ref). Sharing the one registry is what keeps a `Colors.Colorant` used by
+several layers down to a single `\definecolor` statement.
+
 ```@docs
-FerriteTikz.gridcode!
+setupMultiPlot
+drawMultiPlot
+gridcode!
+```
+
+The pieces those two functions wrap, should you want to drive the process yourself:
+
+```@docs
 FerriteTikz.ColorRegistry
 FerriteTikz.tikzcolor
 FerriteTikz.definecolors
