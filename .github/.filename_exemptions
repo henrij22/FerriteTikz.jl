@@ -1,0 +1,7 @@
+./LICENSE
+./README.md
+./CITATION.bib
+./src/FerriteTikz.jl
+./Project.toml
+./docs/Project.toml
+./Manifest.toml
