@@ -2,6 +2,7 @@
 
 [![Documentation](https://img.shields.io/badge/docs-stable-blue.svg)](https://henrij22.github.io/FerriteTikz.jl/stable)
 [![CI](https://github.com/henrij22/FerriteTikz.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/henrij22/FerriteTikz.jl/actions/workflows/CI.yml)
+[![codecov](https://codecov.io/gh/henrij22/FerriteTikz.jl/graph/badge.svg?token=5fclrZaMv2)](https://codecov.io/gh/henrij22/FerriteTikz.jl)
 
 Publication-grade TikZ graphics of [Ferrite.jl](https://github.com/Ferrite-FEM/Ferrite.jl)
 grids. FerriteTikz emits plain TikZ code and hands it to
