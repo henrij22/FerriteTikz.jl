@@ -1,6 +1,6 @@
 name = "FerriteTikz"
 uuid = "ab8f0453-36c8-405d-a850-445ebf9b6692"
-version = "0.1.0"
+version = "1.0.0"
 authors = ["Henrik Jakob <jakob@ibb.uni-stuttgart.de>"]
 
 [workspace]
