@@ -120,9 +120,14 @@ Every styling option is documented in `GridStyle`.
 `tikzgrid` produces TikZ path commands (`\fill`, `\draw`, `\node`) rather than a plot with
 axes, which is what a mesh figure actually needs: curved element edges become real cubic
 Bézier segments, shared element edges are stroked exactly once, and the whole picture is a
-handful of lines of LaTeX you can post-process by hand if a reviewer asks for it. Use
+handful of lines of LaTeX you can post-process by hand if the need arises. Use
 `tikzcode(...)` to get that code as a `String`.
 
 ## License
 
 MIT, see [LICENSE](LICENSE).
+
+## Development
+
+This package was mainly developed with AI assistance (Claude Code), however the code was already used in real live.
+Large parts of the code and the documentation were reviewed manually with a special emphasis on not relying on internal parts of `Ferrite.jl`.
