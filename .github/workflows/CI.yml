@@ -40,7 +40,13 @@ jobs:
             version: '1.12'
           - os: macos-latest
             arch: aarch64
-            version: 'pre' 
+            version: 'pre'
+          - os: ubuntu-latest
+            arch: x64
+            version: '1.11'
+          - os: ubuntu-latest
+            arch: x64
+            version: 'min' # lowest version allowed by [compat] in Project.toml
 
     steps:
       - uses: actions/checkout@v7

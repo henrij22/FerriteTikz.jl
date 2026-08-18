@@ -23,7 +23,7 @@ Printf = "1"
 Reexport = "1"
 Tensors = "1"
 TikzPictures = "3.4"
-julia = "1.11"
+julia = "1.10"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
