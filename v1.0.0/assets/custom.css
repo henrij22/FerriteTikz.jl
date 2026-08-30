@@ -1,0 +1,31 @@
+/*
+ * Example-block figures.
+ *
+ * The pictures FerriteTikz produces are meant for print: black lines and the document's own
+ * colours on a transparent background. On a dark theme that makes them all but invisible.
+ *
+ * Inverting them (the usual `filter: invert(1) hue-rotate(180deg)` trick) is the wrong fix
+ * here — the whole point of the package is that a figure shows the colours it will actually
+ * print in, and inverting would misrepresent every `cellcolor` on the page. So the figures
+ * are shown unaltered on a light card, which is also how they will look on paper.
+ *
+ * The card is applied in every theme rather than only the dark ones. Documenter sets
+ * `html.theme--$(name)` and ships four dark themes (documenter-dark plus catppuccin frappe,
+ * macchiato and mocha), so enumerating them would silently break as soon as that list
+ * changes; against the white background of the light themes the card is invisible anyway.
+ *
+ * Both shapes of Documenter output have to be covered: larger figures are written to `.svg`
+ * files and carry `alt="Example block output"`, smaller ones are inlined as `data:` URIs and
+ * carry no `alt` at all.
+ */
+
+article.content img[src$=".svg"],
+article.content img[src^="data:image/svg+xml"] {
+    display: block;
+    margin: 1.25rem auto;
+    max-width: 100%;
+    height: auto;
+    background: #ffffff;
+    padding: 0.9rem 1.1rem;
+    border-radius: 6px;
+}
