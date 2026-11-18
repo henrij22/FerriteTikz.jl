@@ -16,19 +16,24 @@ Tensors = "48a634ad-e948-5137-8d70-aa71f2a747f4"
 TikzPictures = "37f6aa50-8035-52d0-81c2-5a1d08754b2d"
 
 [compat]
+Aqua = "0.8"
 ArgCheck = "2"
 Colors = "0.12, 0.13"
 Ferrite = "1.4"
 Printf = "1"
 Reexport = "1"
 Tensors = "1"
+Test = "1"
+TestItemRunner = "1"
+TestItems = "1"
 TikzPictures = "3.4"
 julia = "1.10"
 
 [extras]
+Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 TestItemRunner = "f8b46487-2199-4994-9208-9a1283c18c0a"
 TestItems = "1c621080-faea-4a02-84b6-bbd5e436b8fe"
 
 [targets]
-test = ["Test", "TestItems", "TestItemRunner"]
+test = ["Aqua", "Test", "TestItems", "TestItemRunner"]
