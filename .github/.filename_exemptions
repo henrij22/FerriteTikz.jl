@@ -5,3 +5,4 @@
 ./Project.toml
 ./docs/Project.toml
 ./Manifest.toml
+./test/Aqua.jl
